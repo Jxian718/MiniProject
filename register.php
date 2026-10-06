@@ -8,11 +8,13 @@ $message = "";
 
 if (isset($_POST["register"])) {
 
-    $name = $_POST["name"];
-    $email = $_POST["email"];
+    $name = trim($_POST["name"]);
+    $email = trim($_POST["email"]);
     $password = $_POST["password"];
 
+    /* Check if email already exists */
     $check = "SELECT * FROM users WHERE email='$email'";
+
     $result = mysqli_query($conn, $check);
 
     if (mysqli_num_rows($result) > 0) {
@@ -21,20 +23,22 @@ if (isset($_POST["register"])) {
 
     } else {
 
+        /* New users are always user */
         $role = "user";
 
-        $sql = "INSERT INTO users (name, email, password, role)
-                VALUES ('$name', '$email', '$password', '$role')";
+        /* New users start with RM0 */
+        $balance = 0.00;
+
+        /* Insert new user */
+        $sql = "INSERT INTO users
+                (name, email, password, role, balance)
+                VALUES
+                ('$name', '$email', '$password', '$role', '$balance')";
 
         if (mysqli_query($conn, $sql)) {
 
-            $user_id = mysqli_insert_id($conn);
-
-            $_SESSION["user_id"] = $user_id;
-            $_SESSION["name"] = $name;
-            $_SESSION["role"] = $role;
-
-            header("Location: user.php");
+            /* Go to login page */
+            header("Location: login.php?registered=1");
             exit();
 
         } else {
@@ -47,153 +51,210 @@ if (isset($_POST["register"])) {
 
 ?>
 
-
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
-    <title>Register</title>
-<style>
-   * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    background-image: url("../images/city.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    <meta charset="UTF-8">
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.register-box {
+    <title>Register - Bank System</title>
 
-    width: 420px;
-    max-width: 90%;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.96);
-    border-radius: 20px;
-    box-shadow:0 20px 50px rgba(0, 0, 0, 0.35);
-    text-align: center;
-    animation: fadeIn 0.8s ease;
-}
+    <style>
 
-.register-box h2 {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    color: #0b5ed7;
-    font-size: 30px;
-    margin-bottom: 8px;
-    font-weight: 700;
-}
+        body {
 
-.register-box h3 {
+            min-height: 100vh;
 
-    color: #555;
-    font-size: 18px;
-    margin-bottom: 28px;
-    font-weight: normal;
-}
+            background-image: url("../images/city.jpg");
 
-/* Error message */
+            background-size: cover;
 
-.error {
+            background-position: center;
 
-    background: #ffe5e5;
-    color: #d8000c;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
-}
+            background-repeat: no-repeat;
 
+            display: flex;
 
+            justify-content: center;
 
-form {
+            align-items: center;
 
-    text-align: left;
-}
+            font-family: Arial, sans-serif;
+        }
 
-label {
+        .register-box {
 
-    display: block;
-    margin-bottom: 7px;
-    color: #333;
-    font-size: 14px;
-    font-weight: 600;
-}
+            width: 420px;
 
-input {
+            max-width: 90%;
 
-    width: 100%;
-    padding: 13px 15px;
-    margin-bottom: 18px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    outline: none;
-    font-size: 15px;
-    transition: 0.3s;
-}
+            padding: 40px;
 
-input:focus 
-{
-    border-color: #0b5ed7;
-    box-shadow:0 0 0 3px rgba(11, 94, 215, 0.12);
-}
+            background: rgba(255, 255, 255, 0.96);
 
-button 
-{
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #0b5ed7, #063b91);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 5px;
-}
+            border-radius: 20px;
 
-button:hover {
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.35);
 
-    
+            text-align: center;
+        }
 
-    box-shadow:
-        0 8px 20px rgba(11, 94, 215, 0.3);
-}
+        .register-box h2 {
 
-.register-box p:last-child 
-{
+            color: #0b5ed7;
 
-    margin-top: 22px;
-    color: #666;
-    font-size: 14px;
-}
+            font-size: 30px;
 
-.register-box a
-{
-    color: #0b5ed7;
-    text-decoration: none;
-    font-weight: bold;
-}
+            margin-bottom: 8px;
 
-.register-box a:hover 
-{
-   text-decoration: underline;
-}
+            font-weight: 700;
+        }
 
+        .register-box h3 {
 
+            color: #555;
 
-</style>
-    
+            font-size: 18px;
+
+            margin-bottom: 28px;
+
+            font-weight: normal;
+        }
+
+        .message {
+
+            background: #ffe5e5;
+
+            color: #d8000c;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+        }
+
+        form {
+
+            text-align: left;
+        }
+
+        label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #333;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        input {
+
+            width: 100%;
+
+            padding: 13px 15px;
+
+            margin-bottom: 18px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 10px;
+
+            outline: none;
+
+            font-size: 15px;
+
+            transition: 0.3s;
+        }
+
+        input:focus {
+
+            border-color: #0b5ed7;
+
+            box-shadow:
+                0 0 0 3px rgba(11, 94, 215, 0.12);
+        }
+
+        button {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0b5ed7,
+                    #063b91
+                );
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 5px;
+
+            transition: 0.3s;
+        }
+
+        button:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 8px 20px rgba(11, 94, 215, 0.3);
+        }
+
+        .login-link {
+
+            margin-top: 22px;
+
+            color: #666;
+
+            font-size: 14px;
+        }
+
+        .login-link a {
+
+            color: #0b5ed7;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+
+            text-decoration: underline;
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -202,48 +263,75 @@ button:hover {
 
     <h2>Bank System</h2>
 
-    <h3>Register</h3>
+    <h3>Create Your Account</h3>
 
-    <?php
 
-    if ($message != "") {
-        echo "<p>$message</p>";
-    }
+    <?php if ($message != ""): ?>
 
-    ?>
+        <div class="message">
+            <?= htmlspecialchars($message) ?>
+        </div>
+
+    <?php endif; ?>
+
 
     <form method="POST">
 
-        <label>Name</label>
-        <input type="text" name="name" required>
+        <label>
+            Full Name
+        </label>
 
-        <br><br>
+        <input
+            type="text"
+            name="name"
+            placeholder="Enter your full name"
+            required
+        >
 
-        <label>Email</label>
-        <input type="email" name="email" required>
 
-        <br><br>
+        <label>
+            Email
+        </label>
 
-        <label>Password</label>
-        <input type="password" name="password" required>
+        <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+        >
 
-        <br><br>
 
-        <button type="submit" name="register">Register</button>
+        <label>
+            Password
+        </label>
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Create a password"
+            required
+        >
+
+
+        <button type="submit" name="register">
+            Create Account
+        </button>
 
     </form>
 
-    <br>
 
-    <p>
-    Already have an account?
-    <a href="login.php">Login</a>
-    </p>
+    <div class="login-link">
 
+        Already have an account?
+
+        <a href="login.php">
+            Login
+        </a>
+
+    </div>
 
 </div>
 
 </body>
 
 </html>
-

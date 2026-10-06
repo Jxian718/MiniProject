@@ -131,10 +131,11 @@ if (!isset($_SESSION["user_id"])) {
         margin-bottom: 15px;
     }
 
-        table {
-         width: 100%;
-        、 border-collapse: collapse;
-        }
+    table 
+    {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
         table th,
         table td {
@@ -183,56 +184,29 @@ if (!isset($_SESSION["user_id"])) {
         <h2>Bank System</h2>
 
         <ul>
-            <li>
-                <a href="user.php">Dashboard</a>
-            </li>
-
-            <li>
-                <a href="profile.php">My Profile</a>
-            </li>
-
-            <li>
-                <a href="transfer.php">Transfer</a>
-            </li>
-
-            <li>
-                <a href="transactions.php">Transactions</a>
-            </li>
-
-            <li>
-                <a href="logout.php">Logout</a>
-            </li>
+            <li><a href="user.php">Dashboard</a> </li>
+            <li><a href="profile.php">My Profile</a></li>
+            <li><a href="transfer.php">Transfer</a></li>
+            <li><a href="transactions.php">Transactions</a></li>
+            <li> <a href="logout.php">Logout</a></li>
         </ul>
 
     </div>
 
-
-    <!-- Main Content -->
     <div class="main">
-
-        <!-- Welcome -->
         <div class="header">
-
-            <h1>
-                Welcome,
-                <?php echo htmlspecialchars($_SESSION["name"]); ?>!
-            </h1>
+            <h1>Welcome,<?php echo htmlspecialchars($_SESSION["name"]); ?>!</h1>
 
             <p>You are logged in as a user.</p>
 
         </div>
 
 
-        <!-- Cards -->
         <div class="cards">
-
             <div class="card">
 
                 <h3>Account Balance</h3>
-
-                <p class="balance">
-                    RM 5,000.00
-                </p>
+                <p class="balance">RM 967,489,334.00</p>
 
             </div>
 
